@@ -12,6 +12,15 @@ TEAM_REGISTRY = {
             "git_feature_branch": "feature/activity-10-oliver",
             "preferred_ai_assistant": "ChatGPT (GPT-4o)",
             "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        },
+        {
+            "name": "Valeria Hurtado",
+            "student_id": "00487453",
+            "role": "ML Engineer",
+            "assigned_reviewer": "Brenda Elisa Cabrera Cruz",
+            "git_feature_branch": "feature/activity-10-valeria-hurtado",
+            "preferred_ai_assistant": "Claude",
+            "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
     ]
 }
