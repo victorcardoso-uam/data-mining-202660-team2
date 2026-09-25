@@ -13,6 +13,15 @@ TEAM_REGISTRY = {
             "git_feature_branch": "feature/activity-10-oliver",
             "preferred_ai_assistant": "Gemini",
             "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        },
+        {
+            "name": "Jorge David López Almanza",
+            "student_id": "00487132",
+            "role": "ML Engineer",
+            "assigned_reviewer": "Valeria Hurtado",
+            "git_feature_branch": "feature/activity-10-david-lopez",
+            "preferred_ai_assistant": "Claude",
+            "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
     ]
 }
