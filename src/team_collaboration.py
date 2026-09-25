@@ -14,6 +14,15 @@ TEAM_REGISTRY = {
             "preferred_ai_assistant": "Gemini",
             "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         },
+        { 
+            "name": "Brenda Elisa Cabrera Cruz", 
+            "student_id": "00469884", 
+            "role": "Data Quality Auditor",  
+            "assigned_reviewer": "Valeria Hurtado Ruiz", 
+            "git_feature_branch": "feature/activity-10-Brenda-Cabrera", 
+            "preferred_ai_assistant": "GitHub Copilot in VS Code", 
+            "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") 
+        } 
         {
             "name": "Valeria Hurtado",
             "student_id": "00487453",
