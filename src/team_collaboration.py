@@ -31,6 +31,15 @@ TEAM_REGISTRY = {
             "git_feature_branch": "feature/activity-10-valeria-hurtado",
             "preferred_ai_assistant": "Claude",
             "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        },
+        {
+            "name": "Hector Ramirez",
+            "student_id": "00443068",
+            "role": "ML Engineer",
+            "assigned_reviewer": "Valeria Hurtado",
+            "git_feature_branch": "feature/activity-10-Hector-Ramirez",
+            "preferred_ai_assistant": "Claude",
+            "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
     ]
 }
