@@ -1,3 +1,4 @@
+# Feature activity 10 - Oliver Pacheco profile registration
 import datetime
 
 TEAM_REGISTRY = {
@@ -10,7 +11,7 @@ TEAM_REGISTRY = {
             "role": "Lead Data Engineer",
             "assigned_reviewer": "Valeria Hurtado",
             "git_feature_branch": "feature/activity-10-oliver",
-            "preferred_ai_assistant": "ChatGPT (GPT-4o)",
+            "preferred_ai_assistant": "Gemini",
             "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
     ]
@@ -24,4 +25,3 @@ def display_team_roster():
 
 if __name__ == '__main__':
     display_team_roster()
-    
