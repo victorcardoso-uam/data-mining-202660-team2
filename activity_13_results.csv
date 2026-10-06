@@ -1,0 +1,4 @@
+Candidate,ccp_alpha,Leaves |T|,Max Depth,Train Error %,Test Error %,Total Cost
+alpha_1 (Unconstrained),0.001,63,13,0.0,15.95,0.2225
+alpha_2 (Optimal Pruned),0.015,5,3,8.42,10.43,0.1793
+alpha_3 (Over-Pruned),0.08,1,0,18.89,19.02,0.2702
