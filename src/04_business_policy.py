@@ -50,20 +50,20 @@ plt.close(fig)
 
 # ---- 2. Traffic light -------------------------------------------------------
 YELLOW, RED = 0.30, 0.60
-pred["semaforo"] = pd.cut(p, [-0.01, YELLOW, RED, 1.01],
-                          labels=["Verde", "Amarillo", "Rojo"])
-light = pred.groupby("semaforo", observed=False).agg(
-    turnos=("missed_target", "size"),
-    incumplimientos=("missed_target", "sum"),
+pred["traffic_light"] = pd.cut(p, [-0.01, YELLOW, RED, 1.01],
+                               labels=["Green", "Yellow", "Red"])
+light = pred.groupby("traffic_light", observed=False).agg(
+    shifts=("missed_target", "size"),
+    misses=("missed_target", "sum"),
 )
-light["tasa_real_incumplimiento"] = light["incumplimientos"] / light["turnos"]
-light["%_de_todos_los_incumplimientos"] = light["incumplimientos"] / y.sum()
+light["actual_miss_rate"] = light["misses"] / light["shifts"]
+light["%_of_all_misses"] = light["misses"] / y.sum()
 print("\nTRAFFIC LIGHT ON TEST SET\n", light.round(3).to_string())
 light.to_csv(ROOT / "reports" / "traffic_light_test.csv")
 
 # ---- 3. Annual impact (formula from the proposal) ---------------------------
 ANNUAL_EVENTS = 904                      # 12 teams x 280 days x 26.9%
-caught = light.loc[["Amarillo", "Rojo"], "incumplimientos"].sum() / y.sum()
+caught = light.loc[["Yellow", "Red"], "misses"].sum() / y.sum()
 TARGET_REDUCTION = 0.175                 # target from the proposal (15 to 20%)
 needed_effectiveness = TARGET_REDUCTION / caught
 print(f"\nTraffic light coverage (yellow + red) is {caught:.1%} of the non-compliance events")
@@ -76,9 +76,8 @@ for cost in [5_000, 10_000, 20_000]:
     print(f"  If each event costs ${cost:,} MXN, the annual savings are "
           f"${ANNUAL_EVENTS * TARGET_REDUCTION * cost:,.0f} MXN")
 
-
 # Impact summary for slide 2
-impact = pd.DataFrame({"costo_por_evento_mxn": [5_000, 10_000, 20_000]})
-impact["ahorro_anual_mxn"] = impact["costo_por_evento_mxn"] * ANNUAL_EVENTS * TARGET_REDUCTION
+impact = pd.DataFrame({"cost_per_event_mxn": [5_000, 10_000, 20_000]})
+impact["annual_savings_mxn"] = impact["cost_per_event_mxn"] * ANNUAL_EVENTS * TARGET_REDUCTION
 impact.to_csv(ROOT / "reports" / "impact_summary.csv", index=False)
 print("\nSaved to reports/impact_summary.csv")
