@@ -74,3 +74,10 @@ print(f"Eventos evitados por año (meta): {ANNUAL_EVENTS * TARGET_REDUCTION:.0f}
 for cost in [5_000, 10_000, 20_000]:
     print(f"  Si cada evento cuesta ${cost:,} MXN -> ahorro anual "
           f"${ANNUAL_EVENTS * TARGET_REDUCTION * cost:,.0f} MXN")
+
+
+# Resumen del impacto para la diapositiva 2
+impact = pd.DataFrame({"costo_por_evento_mxn": [5_000, 10_000, 20_000]})
+impact["ahorro_anual_mxn"] = impact["costo_por_evento_mxn"] * ANNUAL_EVENTS * TARGET_REDUCTION
+impact.to_csv(ROOT / "reports" / "impact_summary.csv", index=False)
+print("\nGuardado: reports/impact_summary.csv")
