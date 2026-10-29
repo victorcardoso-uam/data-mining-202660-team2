@@ -184,6 +184,7 @@ print("Importancia de variables:\n", imp.sort_values(ascending=False).round(3).t
 imp.sort_values(ascending=False).to_csv(ROOT / "reports" / "tree_feature_importance.csv")
 fig, ax = plt.subplots(figsize=(7, 4))
 imp.plot.barh(ax=ax, color="#1f4e79")
+imp.plot.barh(ax=ax, color="#1f4e79")
 ax.set_xlabel("Importancia (reducción de Gini)")
 ax.set_title("¿Qué variables explican el incumplimiento?")
 fig.tight_layout()
