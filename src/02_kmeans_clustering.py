@@ -116,6 +116,7 @@ for b, n in zip(bars, profile["registros"]):
 ax.set_xlabel("Clúster")
 ax.set_ylabel("% de registros que no alcanzan la meta")
 ax.set_title("Riesgo de incumplimiento por escenario operativo (K-Means)")
+ax.grid(axis="y", alpha=0.3)
 ax.legend()
 fig.tight_layout()
 fig.savefig(FIG / "kmeans_risk_by_cluster.png", dpi=200)
