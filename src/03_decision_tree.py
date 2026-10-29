@@ -1,22 +1,22 @@
 """
 03_decision_tree.py
-Pregunta de negocio: dado el estado operativo de un equipo, ¿alcanzará su meta hoy
-y qué variable lo explica?
+Business question. Given the operating state of a team, will it reach its target today
+and which variable explains it?
 
-Pasos:
-  1. Split estratificado 80/20 ANTES de cualquier ajuste (evita fuga de datos).
-  2. Pipeline = ColumnTransformer (One-Hot para categóricas) + DecisionTreeClassifier.
-     El encoder se ajusta solo con train dentro de cada fold de la validación cruzada.
-  3. Árbol sin podar (línea base) para mostrar el sobreajuste.
-  4. GridSearchCV 5-fold estratificado sobre max_depth, min_samples_leaf, ccp_alpha
-     y class_weight, optimizando F1-macro.
-  5. Evaluación en test: F1-macro, ROC-AUC, matriz de confusión, curvas ROC y P-R,
-     importancia de variables y reglas IF-THEN legibles.
+The script follows these steps.
+  1. Stratified 80/20 split BEFORE any fitting (prevents data leakage).
+  2. Pipeline = ColumnTransformer (One-Hot for categorical variables) + DecisionTreeClassifier.
+     The encoder is fitted only on the training data inside each cross-validation fold.
+  3. Unpruned tree (baseline) to show the overfitting.
+  4. Stratified 5-fold GridSearchCV over max_depth, min_samples_leaf, ccp_alpha
+     and class_weight, optimizing F1-macro.
+  5. Test evaluation with F1-macro, ROC-AUC, confusion matrix, ROC and P-R curves,
+     feature importance and readable IF-THEN rules.
 
-Anti-fuga: 'actual_productivity' define la variable objetivo -> se EXCLUYE de X.
-'date' es un identificador temporal -> se excluye.
+Leakage note. 'actual_productivity' defines the target variable, so it is EXCLUDED from X.
+'date' is a time identifier, so it is also excluded.
 
-Uso:  python src/03_decision_tree.py
+Run it with  python src/03_decision_tree.py
 """
 from pathlib import Path
 
@@ -49,21 +49,21 @@ CATEGORICAL = ["department", "day", "quarter", "team"]
 NUMERIC = ["targeted_productivity", "smv", "wip", "over_time", "incentive",
            "idle_time", "idle_men", "no_of_style_change", "no_of_workers"]
 TARGET = "missed_target"
-LEAKY = ["actual_productivity", "date"]  # nunca entran al modelo
+LEAKY = ["actual_productivity", "date"]  # these never enter the model
 
 df = pd.read_csv(DATA)
 X = df[CATEGORICAL + NUMERIC]
 y = df[TARGET]
-assert not set(LEAKY) & set(X.columns), "Fuga de datos: columna prohibida en X"
+assert not set(LEAKY) & set(X.columns), "Data leakage, forbidden column in X"
 
-# ---- 1. Split estratificado ----------------------------------------------
+# ---- 1. Stratified split --------------------------------------------------
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.20, stratify=y, random_state=RANDOM_STATE)
-print(f"Train: {X_train.shape} | Test: {X_test.shape}")
-print(f"Tasa de incumplimiento  train={y_train.mean():.3f}  test={y_test.mean():.3f}\n")
+print(f"Train shape {X_train.shape} | Test shape {X_test.shape}")
+print(f"Non-compliance rate, train={y_train.mean():.3f}  test={y_test.mean():.3f}\n")
 
 # ---- 2. Pipeline ------------------------------------------------------------
-# Los árboles no necesitan escalado; solo codificamos las categóricas.
+# Trees do not need scaling, we only encode the categorical variables.
 prep = ColumnTransformer([
     ("onehot", OneHotEncoder(handle_unknown="ignore", sparse_output=False),
      CATEGORICAL),
@@ -78,16 +78,16 @@ def make_pipe(**tree_params):
     ])
 
 
-# ---- 3. Línea base: árbol sin podar (sobreajuste) ----------------------------
+# ---- 3. Baseline, unpruned tree (overfitting) -------------------------------
 base = make_pipe().fit(X_train, y_train)
 base_tree = base.named_steps["tree"]
-print("ÁRBOL SIN PODAR (línea base)")
-print(f"  hojas={base_tree.get_n_leaves()}  profundidad={base_tree.get_depth()}")
+print("UNPRUNED TREE (baseline)")
+print(f"  leaves={base_tree.get_n_leaves()}  depth={base_tree.get_depth()}")
 print(f"  accuracy train={accuracy_score(y_train, base.predict(X_train)):.3f}  "
       f"test={accuracy_score(y_test, base.predict(X_test)):.3f}")
 print(f"  F1-macro test={f1_score(y_test, base.predict(X_test), average='macro'):.3f}\n")
 
-# ---- 4. Búsqueda de hiperparámetros con CV 5-fold ---------------------------
+# ---- 4. Hyperparameter search with 5-fold CV --------------------------------
 alphas = base_tree.cost_complexity_pruning_path(
     base.named_steps["prep"].transform(X_train), y_train).ccp_alphas
 alpha_grid = np.unique(np.round(np.quantile(alphas, np.linspace(0, 0.95, 12)), 5))
@@ -104,16 +104,16 @@ search = GridSearchCV(make_pipe(), grid, scoring="f1_macro", cv=cv, n_jobs=-1,
 search.fit(X_train, y_train)
 best = search.best_estimator_
 best_tree = best.named_steps["tree"]
-print("MEJORES HIPERPARÁMETROS (CV 5-fold, F1-macro):")
+print("BEST HYPERPARAMETERS (5-fold CV, F1-macro)")
 for k, v in search.best_params_.items():
     print(f"  {k.replace('tree__', '')} = {v}")
 cv_row = search.cv_results_
 i = search.best_index_
 print(f"  F1-macro CV = {cv_row['mean_test_score'][i]:.3f} "
       f"± {cv_row['std_test_score'][i]:.3f}  (train {cv_row['mean_train_score'][i]:.3f})")
-print(f"  hojas={best_tree.get_n_leaves()}  profundidad={best_tree.get_depth()}\n")
+print(f"  leaves={best_tree.get_n_leaves()}  depth={best_tree.get_depth()}\n")
 
-# ---- 5. Evaluación en test --------------------------------------------------
+# ---- 5. Test evaluation -----------------------------------------------------
 y_pred = best.predict(X_test)
 y_proba = best.predict_proba(X_test)[:, 1]
 metrics = {
@@ -122,37 +122,37 @@ metrics = {
     "f1_macro_test": f1_score(y_test, y_pred, average="macro"),
     "roc_auc_test": roc_auc_score(y_test, y_proba),
 }
-print("MÉTRICAS EN TEST (datos nunca vistos):")
+print("TEST METRICS (never seen data)")
 for k, v in metrics.items():
     print(f"  {k} = {v:.3f}")
 print("\n", classification_report(y_test, y_pred,
-                                  target_names=["Cumple meta", "No cumple"]))
+                                  target_names=["Meets target", "Misses target"]))
 pd.Series(metrics).round(4).to_csv(ROOT / "reports" / "tree_metrics.csv")
 
-# Matriz de confusión
+# Confusion matrix
 fig, ax = plt.subplots(figsize=(5, 4.5))
 ConfusionMatrixDisplay.from_predictions(
-    y_test, y_pred, display_labels=["Cumple", "No cumple"], cmap="Blues", ax=ax)
-ax.set_title("Matriz de confusión — test (n=240)")
-ax.set_xlabel("Predicción del modelo")
-ax.set_ylabel("Valor real")
+    y_test, y_pred, display_labels=["Meets", "Misses"], cmap="Blues", ax=ax)
+ax.set_title("Confusion matrix, test set (n=240)")
+ax.set_xlabel("Model prediction")
+ax.set_ylabel("Actual value")
 fig.tight_layout()
 fig.savefig(FIG / "tree_confusion_matrix.png", dpi=200)
 plt.close(fig)
 
-# ROC y Precision-Recall
+# ROC and Precision-Recall
 fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
-RocCurveDisplay.from_predictions(y_test, y_proba, ax=axes[0], name="Árbol podado")
-axes[0].plot([0, 1], [0, 1], "--", color="gray", label="Azar")
-axes[0].set_title("Curva ROC")
-axes[0].set_xlabel("Tasa de falsos positivos")
-axes[0].set_ylabel("Tasa de verdaderos positivos (Recall)")
+RocCurveDisplay.from_predictions(y_test, y_proba, ax=axes[0], name="Pruned tree")
+axes[0].plot([0, 1], [0, 1], "--", color="gray", label="Chance")
+axes[0].set_title("ROC curve")
+axes[0].set_xlabel("False positive rate")
+axes[0].set_ylabel("True positive rate (Recall)")
 axes[0].legend(loc="lower right")
 PrecisionRecallDisplay.from_predictions(y_test, y_proba, ax=axes[1],
-                                        name="Árbol podado")
+                                        name="Pruned tree")
 axes[1].axhline(y_test.mean(), ls="--", color="gray",
-                label=f"Línea base ({y_test.mean():.2f})")
-axes[1].set_title("Precision vs. Recall (clase 'No cumple')")
+                label=f"Baseline ({y_test.mean():.2f})")
+axes[1].set_title("Precision vs. Recall (class 'Misses target')")
 axes[1].set_xlabel("Recall")
 axes[1].set_ylabel("Precision")
 axes[1].legend(loc="upper right")
@@ -160,55 +160,55 @@ fig.tight_layout()
 fig.savefig(FIG / "tree_roc_pr_curves.png", dpi=200)
 plt.close(fig)
 
-# Sobreajuste: profundidad vs. F1 (train vs. validación)
+# Overfitting, depth vs. F1 (train vs. validation)
 res = pd.DataFrame(cv_row)
 depth_curve = res.groupby("param_tree__max_depth")[["mean_train_score",
                                                     "mean_test_score"]].max()
 fig, ax = plt.subplots(figsize=(7, 4))
 ax.plot(depth_curve.index, depth_curve["mean_train_score"], "o-", label="Train")
 ax.plot(depth_curve.index, depth_curve["mean_test_score"], "s-",
-        label="Validación (CV)")
+        label="Validation (CV)")
 ax.set_xlabel("max_depth")
 ax.set_ylabel("F1-macro")
-ax.set_title("Brecha de generalización según la profundidad del árbol")
+ax.set_title("Generalization gap by tree depth")
 ax.legend()
 fig.tight_layout()
 fig.savefig(FIG / "tree_depth_validation_curve.png", dpi=200)
 plt.close(fig)
 
-# Importancia de variables
+# Feature importance
 names = best.named_steps["prep"].get_feature_names_out()
 imp = pd.Series(best_tree.feature_importances_, index=names)
 imp = imp[imp > 0].sort_values()
-print("Importancia de variables:\n", imp.sort_values(ascending=False).round(3).to_string())
+print("Feature importance\n", imp.sort_values(ascending=False).round(3).to_string())
 imp.sort_values(ascending=False).to_csv(ROOT / "reports" / "tree_feature_importance.csv")
 fig, ax = plt.subplots(figsize=(7, 4))
 imp.plot.barh(ax=ax, color="#1f4e79")
 imp.plot.barh(ax=ax, color="#1f4e79")
-ax.set_xlabel("Importancia (reducción de Gini)")
-ax.set_title("¿Qué variables explican el incumplimiento?")
+ax.set_xlabel("Importance (Gini reduction)")
+ax.set_title("Which variables explain non-compliance?")
 fig.tight_layout()
 fig.savefig(FIG / "tree_feature_importance.png", dpi=200)
 plt.close(fig)
 
-# Árbol dibujado + reglas IF-THEN
-# Solo los 3 primeros niveles: es lo que el supervisor lee como regla.
+# Tree plot and IF-THEN rules
+# Only the first 3 levels, since that is what the supervisor reads as a rule.
 fig, ax = plt.subplots(figsize=(18, 8))
-plot_tree(best_tree, feature_names=list(names), class_names=["Cumple", "No cumple"],
+plot_tree(best_tree, feature_names=list(names), class_names=["Meets", "Misses"],
           filled=True, rounded=True, fontsize=10, impurity=False, proportion=True,
           max_depth=3, ax=ax)
-ax.set_title("Árbol podado — primeros 3 niveles (reglas para el supervisor)")
+ax.set_title("Pruned tree, first 3 levels (rules for the supervisor)")
 fig.tight_layout()
 fig.savefig(FIG / "tree_structure.png", dpi=200)
 plt.close(fig)
 rules = export_text(best_tree, feature_names=list(names), show_weights=True)
 (ROOT / "reports" / "tree_rules.txt").write_text(rules, encoding="utf-8")
-print("\nREGLAS DEL ÁRBOL:\n", rules)
+print("\nTREE RULES\n", rules)
 
-# Guardar modelo y predicciones de test para la política de negocio
+# Save the model and the test predictions for the business policy
 joblib.dump(best, MODELS / "decision_tree.joblib")
 out = X_test.copy()
 out["missed_target"] = y_test.values
 out["risk_score"] = y_proba
 out.to_csv(ROOT / "data" / "processed" / "test_predictions.csv", index=False)
-print("Modelo guardado en models/decision_tree.joblib")
+print("Model saved to models/decision_tree.joblib")
