@@ -1,9 +1,10 @@
 """
 04_business_policy.py
-Traduce el risk_score del árbol (probabilidad de NO cumplir la meta) en un semáforo
-operativo por equipo y estima el impacto anual para el gerente de planta IMMEX.
+Translates the tree's risk_score (probability of NOT meeting the target) into an
+operational traffic light per team and estimates the annual impact for the
+IMMEX plant manager.
 
-Uso:  python src/04_business_policy.py
+Run it with  python src/04_business_policy.py
 """
 from pathlib import Path
 
@@ -20,7 +21,7 @@ pred = pd.read_csv(ROOT / "data" / "processed" / "test_predictions.csv")
 FIG = ROOT / "reports" / "figures"
 y, p = pred["missed_target"], pred["risk_score"]
 
-# ---- 1. Barrido de umbrales -------------------------------------------------
+# ---- 1. Threshold sweep -----------------------------------------------------
 rows = []
 for t in np.arange(0.10, 0.91, 0.05):
     yhat = (p >= t).astype(int)
@@ -33,21 +34,21 @@ print(sweep.round(2).to_string(index=False))
 sweep.to_csv(ROOT / "reports" / "threshold_sweep.csv", index=False)
 
 fig, ax = plt.subplots(figsize=(8, 4.5))
-ax.plot(sweep["umbral"], sweep["recall"], "o-", label="Recall (incumplimientos detectados)")
-ax.plot(sweep["umbral"], sweep["precision"], "s-", label="Precision (alertas correctas)")
+ax.plot(sweep["umbral"], sweep["recall"], "o-", label="Recall (non-compliance detected)")
+ax.plot(sweep["umbral"], sweep["precision"], "s-", label="Precision (correct alerts)")
 ax.plot(sweep["umbral"], sweep["alertas_%"] / 100, "^--", color="gray",
-        label="% de turnos con alerta")
+        label="% of shifts with an alert")
 for t, c in [(0.30, "#e6a700"), (0.60, "#c0504d")]:
     ax.axvline(t, color=c, ls=":", lw=2)
-ax.set_xlabel("Umbral de risk score")
-ax.set_ylabel("Proporción")
-ax.set_title("Trade-off de umbrales para el semáforo")
+ax.set_xlabel("Risk score threshold")
+ax.set_ylabel("Proportion")
+ax.set_title("Threshold trade-off for the traffic light")
 ax.legend(loc="center right", fontsize=8)
 fig.tight_layout()
 fig.savefig(FIG / "policy_threshold_tradeoff.png", dpi=200)
 plt.close(fig)
 
-# ---- 2. Semáforo -------------------------------------------------------------
+# ---- 2. Traffic light -------------------------------------------------------
 YELLOW, RED = 0.30, 0.60
 pred["semaforo"] = pd.cut(p, [-0.01, YELLOW, RED, 1.01],
                           labels=["Verde", "Amarillo", "Rojo"])
@@ -57,27 +58,27 @@ light = pred.groupby("semaforo", observed=False).agg(
 )
 light["tasa_real_incumplimiento"] = light["incumplimientos"] / light["turnos"]
 light["%_de_todos_los_incumplimientos"] = light["incumplimientos"] / y.sum()
-print("\nSEMÁFORO EN TEST:\n", light.round(3).to_string())
+print("\nTRAFFIC LIGHT ON TEST SET\n", light.round(3).to_string())
 light.to_csv(ROOT / "reports" / "traffic_light_test.csv")
 
-# ---- 3. Impacto anual (fórmula de la propuesta) -----------------------------
-ANNUAL_EVENTS = 904                      # 12 equipos x 280 días x 26.9 %
+# ---- 3. Annual impact (formula from the proposal) ---------------------------
+ANNUAL_EVENTS = 904                      # 12 teams x 280 days x 26.9%
 caught = light.loc[["Amarillo", "Rojo"], "incumplimientos"].sum() / y.sum()
-TARGET_REDUCTION = 0.175                 # meta de la propuesta (15-20 %)
+TARGET_REDUCTION = 0.175                 # target from the proposal (15 to 20%)
 needed_effectiveness = TARGET_REDUCTION / caught
-print(f"\nCobertura del semáforo (amarillo + rojo): {caught:.1%} de los incumplimientos")
-print(f"Para lograr -17.5 % de eventos, las intervenciones deben corregir "
-      f"{needed_effectiveness:.1%} de los casos alertados")
-print(f"Eventos evitados por año (meta): {ANNUAL_EVENTS * TARGET_REDUCTION:.0f}")
+print(f"\nTraffic light coverage (yellow + red) is {caught:.1%} of the non-compliance events")
+print(f"To achieve a 17.5% reduction in events, the interventions must fix "
+      f"{needed_effectiveness:.1%} of the alerted cases")
+print(f"Events avoided per year (target) {ANNUAL_EVENTS * TARGET_REDUCTION:.0f}")
 
-# Sensibilidad al costo por evento (SUPUESTO: el equipo debe validar este valor)
+# Sensitivity to the cost per event (ASSUMPTION, the team must validate this value)
 for cost in [5_000, 10_000, 20_000]:
-    print(f"  Si cada evento cuesta ${cost:,} MXN -> ahorro anual "
+    print(f"  If each event costs ${cost:,} MXN, the annual savings are "
           f"${ANNUAL_EVENTS * TARGET_REDUCTION * cost:,.0f} MXN")
 
 
-# Resumen del impacto para la diapositiva 2
+# Impact summary for slide 2
 impact = pd.DataFrame({"costo_por_evento_mxn": [5_000, 10_000, 20_000]})
 impact["ahorro_anual_mxn"] = impact["costo_por_evento_mxn"] * ANNUAL_EVENTS * TARGET_REDUCTION
 impact.to_csv(ROOT / "reports" / "impact_summary.csv", index=False)
-print("\nGuardado: reports/impact_summary.csv")
+print("\nSaved to reports/impact_summary.csv")
