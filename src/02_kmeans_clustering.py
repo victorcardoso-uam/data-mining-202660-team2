@@ -16,7 +16,7 @@ Run it with  python src/02_kmeans_clustering.py
 """
 from pathlib import Path
 
-import matplotlib
+import matplotlib  # pyright: ignore[reportMissingModuleSource]
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
