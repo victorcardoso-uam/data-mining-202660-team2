@@ -1,0 +1,5 @@
+,0
+accuracy_train,0.8746
+accuracy_test,0.8083
+f1_macro_test,0.7415
+roc_auc_test,0.7891

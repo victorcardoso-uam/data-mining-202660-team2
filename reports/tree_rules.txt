@@ -1,0 +1,118 @@
+|--- incentive <= 11.50
+|   |--- smv <= 3.40
+|   |   |--- no_of_workers <= 8.50
+|   |   |   |--- quarter_Quarter1 <= 0.50
+|   |   |   |   |--- weights: [3.00, 42.00] class: 1
+|   |   |   |--- quarter_Quarter1 >  0.50
+|   |   |   |   |--- team_8 <= 0.50
+|   |   |   |   |   |--- weights: [7.00, 10.00] class: 1
+|   |   |   |   |--- team_8 >  0.50
+|   |   |   |   |   |--- weights: [0.00, 5.00] class: 1
+|   |   |--- no_of_workers >  8.50
+|   |   |   |--- team_6 <= 0.50
+|   |   |   |   |--- weights: [7.00, 0.00] class: 0
+|   |   |   |--- team_6 >  0.50
+|   |   |   |   |--- weights: [3.00, 4.00] class: 1
+|   |--- smv >  3.40
+|   |   |--- smv <= 17.16
+|   |   |   |--- over_time <= 1020.00
+|   |   |   |   |--- team_1 <= 0.50
+|   |   |   |   |   |--- targeted_productivity <= 0.78
+|   |   |   |   |   |   |--- quarter_Quarter1 <= 0.50
+|   |   |   |   |   |   |   |--- day_Wednesday <= 0.50
+|   |   |   |   |   |   |   |   |--- weights: [13.00, 9.00] class: 0
+|   |   |   |   |   |   |   |--- day_Wednesday >  0.50
+|   |   |   |   |   |   |   |   |--- weights: [0.00, 10.00] class: 1
+|   |   |   |   |   |   |--- quarter_Quarter1 >  0.50
+|   |   |   |   |   |   |   |--- weights: [11.00, 3.00] class: 0
+|   |   |   |   |   |--- targeted_productivity >  0.78
+|   |   |   |   |   |   |--- weights: [6.00, 19.00] class: 1
+|   |   |   |   |--- team_1 >  0.50
+|   |   |   |   |   |--- weights: [7.00, 0.00] class: 0
+|   |   |   |--- over_time >  1020.00
+|   |   |   |   |--- day_Thursday <= 0.50
+|   |   |   |   |   |--- no_of_workers <= 9.50
+|   |   |   |   |   |   |--- over_time <= 3030.00
+|   |   |   |   |   |   |   |--- team_11 <= 0.50
+|   |   |   |   |   |   |   |   |--- weights: [60.00, 16.00] class: 0
+|   |   |   |   |   |   |   |--- team_11 >  0.50
+|   |   |   |   |   |   |   |   |--- weights: [2.00, 4.00] class: 1
+|   |   |   |   |   |   |--- over_time >  3030.00
+|   |   |   |   |   |   |   |--- weights: [3.00, 7.00] class: 1
+|   |   |   |   |   |--- no_of_workers >  9.50
+|   |   |   |   |   |   |--- quarter_Quarter3 <= 0.50
+|   |   |   |   |   |   |   |--- weights: [86.00, 7.00] class: 0
+|   |   |   |   |   |   |--- quarter_Quarter3 >  0.50
+|   |   |   |   |   |   |   |--- smv <= 4.23
+|   |   |   |   |   |   |   |   |--- weights: [6.00, 6.00] class: 0
+|   |   |   |   |   |   |   |--- smv >  4.23
+|   |   |   |   |   |   |   |   |--- weights: [5.00, 0.00] class: 0
+|   |   |   |   |--- day_Thursday >  0.50
+|   |   |   |   |   |--- over_time <= 1860.00
+|   |   |   |   |   |   |--- weights: [15.00, 4.00] class: 0
+|   |   |   |   |   |--- over_time >  1860.00
+|   |   |   |   |   |   |--- targeted_productivity <= 0.65
+|   |   |   |   |   |   |   |--- weights: [5.00, 1.00] class: 0
+|   |   |   |   |   |   |--- targeted_productivity >  0.65
+|   |   |   |   |   |   |   |--- quarter_Quarter3 <= 0.50
+|   |   |   |   |   |   |   |   |--- weights: [7.00, 7.00] class: 0
+|   |   |   |   |   |   |   |--- quarter_Quarter3 >  0.50
+|   |   |   |   |   |   |   |   |--- weights: [0.00, 5.00] class: 1
+|   |   |--- smv >  17.16
+|   |   |   |--- no_of_workers <= 57.75
+|   |   |   |   |--- wip <= 868.50
+|   |   |   |   |   |--- weights: [1.00, 18.00] class: 1
+|   |   |   |   |--- wip >  868.50
+|   |   |   |   |   |--- smv <= 26.69
+|   |   |   |   |   |   |--- no_of_workers <= 52.50
+|   |   |   |   |   |   |   |--- weights: [4.00, 5.00] class: 1
+|   |   |   |   |   |   |--- no_of_workers >  52.50
+|   |   |   |   |   |   |   |--- weights: [0.00, 13.00] class: 1
+|   |   |   |   |   |--- smv >  26.69
+|   |   |   |   |   |   |--- weights: [4.00, 1.00] class: 0
+|   |   |   |--- no_of_workers >  57.75
+|   |   |   |   |--- day_Monday <= 0.50
+|   |   |   |   |   |--- day_Saturday <= 0.50
+|   |   |   |   |   |   |--- team_5 <= 0.50
+|   |   |   |   |   |   |   |--- weights: [1.00, 10.00] class: 1
+|   |   |   |   |   |   |--- team_5 >  0.50
+|   |   |   |   |   |   |   |--- weights: [5.00, 6.00] class: 1
+|   |   |   |   |   |--- day_Saturday >  0.50
+|   |   |   |   |   |   |--- weights: [4.00, 1.00] class: 0
+|   |   |   |   |--- day_Monday >  0.50
+|   |   |   |   |   |--- weights: [7.00, 0.00] class: 0
+|--- incentive >  11.50
+|   |--- smv <= 35.74
+|   |   |--- wip <= 22.00
+|   |   |   |--- no_of_workers <= 9.50
+|   |   |   |   |--- weights: [4.00, 2.00] class: 0
+|   |   |   |--- no_of_workers >  9.50
+|   |   |   |   |--- weights: [1.00, 5.00] class: 1
+|   |   |--- wip >  22.00
+|   |   |   |--- team_9 <= 0.50
+|   |   |   |   |--- wip <= 680.50
+|   |   |   |   |   |--- over_time <= 2220.00
+|   |   |   |   |   |   |--- weights: [6.00, 4.00] class: 0
+|   |   |   |   |   |--- over_time >  2220.00
+|   |   |   |   |   |   |--- incentive <= 37.50
+|   |   |   |   |   |   |   |--- wip <= 548.50
+|   |   |   |   |   |   |   |   |--- weights: [4.00, 4.00] class: 0
+|   |   |   |   |   |   |   |--- wip >  548.50
+|   |   |   |   |   |   |   |   |--- weights: [7.00, 0.00] class: 0
+|   |   |   |   |   |   |--- incentive >  37.50
+|   |   |   |   |   |   |   |--- weights: [35.00, 2.00] class: 0
+|   |   |   |   |--- wip >  680.50
+|   |   |   |   |   |--- targeted_productivity <= 0.67
+|   |   |   |   |   |   |--- weights: [44.00, 7.00] class: 0
+|   |   |   |   |   |--- targeted_productivity >  0.67
+|   |   |   |   |   |   |--- weights: [294.00, 1.00] class: 0
+|   |   |   |--- team_9 >  0.50
+|   |   |   |   |--- incentive <= 52.50
+|   |   |   |   |   |--- incentive <= 47.50
+|   |   |   |   |   |   |--- weights: [16.00, 4.00] class: 0
+|   |   |   |   |   |--- incentive >  47.50
+|   |   |   |   |   |   |--- weights: [3.00, 5.00] class: 1
+|   |   |   |   |--- incentive >  52.50
+|   |   |   |   |   |--- weights: [12.00, 0.00] class: 0
+|   |--- smv >  35.74
+|   |   |--- weights: [2.00, 10.00] class: 1
