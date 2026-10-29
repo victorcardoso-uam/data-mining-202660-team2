@@ -1,23 +1,23 @@
-# Lean Bottleneck Analysis — Garment IMMEX (Team 2)
+# Lean Bottleneck Analysis (Garment IMMEX, Team 2)
 
-Clasificación del riesgo de incumplimiento de metas de productividad por equipo en una planta de confección IMMEX.
-Data Mining & Modern AI Systems (IIND4417) · Universidad Anáhuac Mayab · Otoño 2026
+Classification of the risk of missing productivity targets by team in an IMMEX garment plant.
+Data Mining & Modern AI Systems (IIND4417) · Universidad Anáhuac Mayab · Fall 2026
 
-**Cliente:** Gerente de Operaciones de Planta IMMEX · **Meta:** reducir 17.5 % de los ~904 eventos anuales de incumplimiento.
+**Client.** Plant Operations Manager at an IMMEX facility · **Goal.** Reduce 17.5% of the ~904 yearly non-compliance events.
 
 ## Dataset
-Productivity Prediction of Garment Employees (UCI, DOI 10.24432/C51S6D, CC BY 4.0) — 1,197 filas × 15 columnas.
+Productivity Prediction of Garment Employees (UCI, DOI 10.24432/C51S6D, CC BY 4.0), 1,197 rows × 15 columns.
 
-## Estructura
+## Structure
 ```
-data/raw/          CSV original (inmutable)
-data/processed/    salidas limpias (se regeneran)
-src/               pipeline en orden 01 → 04
-reports/figures/   gráficas para la presentación
-models/            modelo entrenado (.joblib)
+data/raw/          original CSV (immutable)
+data/processed/    clean outputs (regenerated)
+src/               pipeline in order 01 → 04
+reports/figures/   charts for the presentation
+models/            trained model (.joblib)
 ```
 
-## Cómo correrlo
+## How to run it
 ```bash
 python -m venv .venv
 # Windows: .venv\Scripts\activate   |   Mac/Linux: source .venv/bin/activate
@@ -28,14 +28,25 @@ python src/03_decision_tree.py
 python src/04_business_policy.py
 ```
 
-## Resultados (Milestone 2)
-| Modelo | Métrica | Criterio | Resultado |
+## Results (Milestone 2)
+| Model | Metric | Criterion | Result |
 |---|---|---|---|
 | K-Means (k=6) | Silhouette | ≥ 0.35 | 0.719 |
-| Árbol de decisión podado | F1-macro (test) | ≥ 0.70 | 0.742 |
-| Árbol de decisión podado | ROC-AUC (test) | — | 0.789 |
+| Pruned decision tree | F1-macro (test) | ≥ 0.70 | 0.742 |
+| Pruned decision tree | ROC-AUC (test) | n/a | 0.789 |
 
-## Prevención de fuga de datos
-- `actual_productivity` define la variable objetivo, así que se excluye de los predictores.
-- El split 80/20 estratificado se hace antes de ajustar cualquier transformación; el One-Hot vive dentro del `Pipeline`, así que en la CV se ajusta solo con los folds de entrenamiento.
-- WIP de Finishing se imputa con 0 por regla de negocio, no con estadísticos del dataset completo.
+## Data leakage prevention
+- `actual_productivity` defines the target variable, so it is excluded from the predictors.
+- The stratified 80/20 split is done before fitting any transformation. One-Hot encoding lives inside the `Pipeline`, so during cross-validation it is fitted only on the training folds.
+- Finishing WIP is imputed with 0 as a business rule, not with statistics computed from the full dataset.
+
+## Team
+
+| Team member | Role in Milestone 2 |
+| --- | --- |
+| Brenda Elisa Cabrera Cruz | Documentation and code review |
+| Valeria Hurtado Ruiz | Pipeline integration |
+| Jorge David López Almanza | K-Means clustering |
+| Mauricio Lugo Sánchez | Decision tree |
+| Oliver Edier Pacheco Ku | Business policy and impact |
+| Héctor Ramírez Lerma | Repository hygiene |
