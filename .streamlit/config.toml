@@ -1,0 +1,8 @@
+# Custom dark theme · Garment IMMEX Line Stoppage Risk Dashboard (Team 2)
+[theme]
+base = "dark"
+primaryColor = "#E8641C"
+backgroundColor = "#11151C"
+secondaryBackgroundColor = "#1E2125"
+textColor = "#F1F3F5"
+font = "sans serif"
